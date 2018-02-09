@@ -48,7 +48,7 @@ Plot:
 
 ![nipsplot](plot.png)
 
-## Recreate json
+## Recreate json from scratch
 
 `pip install requests beautifulsoup4` then
 
@@ -56,6 +56,14 @@ Plot:
 >>> import json
 >>> import scrape
 >>> nips = scrape.get_all_years()  # 30-60m on a fast connection
+>>> with open('nips.json', 'w') as outfile:
+...     json.dump(nips, outfile)
+```
+
+## Append a year to existing json
+
+```python
+>>> nips = append_year(2017)
 >>> with open('nips.json', 'w') as outfile:
 ...     json.dump(nips, outfile)
 ```

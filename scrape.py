@@ -1,5 +1,6 @@
 import bs4
 import datetime as dt
+import json
 import requests
 
 urlroot = "https://papers.nips.cc"
@@ -54,6 +55,13 @@ def get_year(year):
     return papers
 
 
+def append_year(year):
+    nips_year = get_year(year)
+    with open('nips.json') as infile:
+        nips_previous = json.loads(infile.read())
+    return nips_previous + nips_year
+
+
 def get_all_years():
-    thisyear = dt.datetime.now().year
-    return sum([get_year(year) for year in range(1987, thisyear+1)], [])
+    this_year = dt.datetime.now().year
+    return sum([get_year(year) for year in range(1987, this_year + 1)], [])
