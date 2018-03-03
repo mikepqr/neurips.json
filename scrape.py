@@ -55,7 +55,7 @@ def get_year(year):
     return papers
 
 
-def append_year(year):
+def load_and_append_year(year):
     nips_year = get_year(year)
     with open('nips.json') as infile:
         nips_previous = json.loads(infile.read())

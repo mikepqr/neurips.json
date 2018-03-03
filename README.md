@@ -63,7 +63,7 @@ Plot:
 ## Append a year to existing json
 
 ```python
->>> nips = append_year(2017)
+>>> nips = load_and_append_year(2017)
 >>> with open('nips.json', 'w') as outfile:
 ...     json.dump(nips, outfile)
 ```
