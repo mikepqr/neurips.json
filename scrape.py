@@ -1,9 +1,11 @@
 import bs4
 import datetime as dt
-import json
 import requests
 
 urlroot = "https://papers.nips.cc"
+
+# Edit this to use pywren to speed up scraping of abstracts
+use_pywren = False
 
 
 def get_abstract(url):
@@ -11,11 +13,27 @@ def get_abstract(url):
     return page.find('p', 'abstract').text
 
 
+def add_abstract(paper):
+    abstract = get_abstract(paper['url'])
+    return {**paper, **{'abstract': abstract}}
+
+
+def add_abstracts(papers):
+    global use_pywren
+    if use_pywren:
+        print("pywren")
+        import pywren
+        pwex = pywren.default_executor()
+        papers = pywren.get_all_results(pwex.map(add_abstract, papers))
+    else:
+        papers = [add_abstract(paper) for paper in papers]
+    return papers
+
+
 def parse_bullet(bullet):
-    paperurl = urlroot + bullet.find_next('a').attrs['href']
-    abstract = get_abstract(paperurl)
+    url = urlroot + bullet.find_next('a').attrs['href']
     texts = [a.text for a in bullet.find_all('a')]
-    return {'title': texts[0], 'authors': texts[1:], 'abstract': abstract}
+    return {'title': texts[0], 'authors': texts[1:], 'url': url}
 
 
 def parse_page(source):
@@ -49,17 +67,12 @@ def make_url(year):
 
 
 def get_year(year):
-    papers = parse_url(make_url(year))
+    year_url = make_url(year)
+    papers = parse_url(year_url)
     for paper in papers:
         paper['year'] = year
+    papers = add_abstracts(papers)
     return papers
-
-
-def load_and_append_year(year):
-    nips_year = get_year(year)
-    with open('nips.json') as infile:
-        nips_previous = json.loads(infile.read())
-    return nips_previous + nips_year
 
 
 def get_all_years():
