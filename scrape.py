@@ -1,16 +1,32 @@
-import bs4
 import datetime as dt
+
+import bs4
 import requests
 
 urlroot = "https://papers.nips.cc"
 
-# Edit this to use pywren to speed up scraping of abstracts
+# Set this to True to use pywren to speed up scraping of abstracts
 use_pywren = False
+
+if use_pywren:
+    import pywren
+    from toolz.itertoolz import partition
+
+
+def pywren_map_in_batches(fxn, args, batch_size=10):
+    def batched_fxn(batch):
+        return [fxn(b) for b in batch]
+    pwex = pywren.default_executor()
+    batches = partition(batch_size, args)
+    return pwex.map(batched_fxn, batches)
 
 
 def get_abstract(url):
     page = bs4.BeautifulSoup(requests.get(url).text, 'html.parser')
-    return page.find('p', 'abstract').text
+    try:
+        return page.find('p', 'abstract').text
+    except AttributeError:
+        return ''
 
 
 def add_abstract(paper):
@@ -21,10 +37,8 @@ def add_abstract(paper):
 def add_abstracts(papers):
     global use_pywren
     if use_pywren:
-        print("pywren")
-        import pywren
-        pwex = pywren.default_executor()
-        papers = pywren.get_all_results(pwex.map(add_abstract, papers))
+        futures = pywren_map_in_batches(add_abstract, papers, batch_size=10)
+        papers = pywren.get_all_results(futures)
     else:
         papers = [add_abstract(paper) for paper in papers]
     return papers
