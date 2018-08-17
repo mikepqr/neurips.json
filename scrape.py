@@ -14,24 +14,26 @@ if use_pywren:
 
 
 def pywren_map_in_batches(fxn, args, batch_size=10):
+
     def batched_fxn(batch):
         return [fxn(b) for b in batch]
+
     pwex = pywren.default_executor()
     batches = partition(batch_size, args)
     return pwex.map(batched_fxn, batches)
 
 
 def get_abstract(url):
-    page = bs4.BeautifulSoup(requests.get(url).text, 'html.parser')
+    page = bs4.BeautifulSoup(requests.get(url).text, "html.parser")
     try:
-        return page.find('p', 'abstract').text
+        return page.find("p", "abstract").text
     except AttributeError:
-        return ''
+        return ""
 
 
 def add_abstract(paper):
-    abstract = get_abstract(paper['url'])
-    return {**paper, **{'abstract': abstract}}
+    abstract = get_abstract(paper["url"])
+    return {**paper, **{"abstract": abstract}}
 
 
 def add_abstracts(papers):
@@ -45,15 +47,17 @@ def add_abstracts(papers):
 
 
 def parse_bullet(bullet):
-    url = urlroot + bullet.find_next('a').attrs['href']
-    texts = [a.text for a in bullet.find_all('a')]
-    return {'title': texts[0], 'authors': texts[1:], 'url': url}
+    url = urlroot + bullet.find_next("a").attrs["href"]
+    texts = [a.text for a in bullet.find_all("a")]
+    return {"title": texts[0], "authors": texts[1:], "url": url}
 
 
 def parse_page(source):
-    page = bs4.BeautifulSoup(source, 'html.parser')
-    papers = [parse_bullet(bullet)
-              for bullet in page.find('div', 'main-container').find_all('li')]
+    page = bs4.BeautifulSoup(source, "html.parser")
+    papers = [
+        parse_bullet(bullet)
+        for bullet in page.find("div", "main-container").find_all("li")
+    ]
     return papers
 
 
@@ -74,9 +78,11 @@ def make_url(year):
         url = urlroot + "/book/neural-information-processing-systems-1987"
     else:
         number = year - 1987
-        url = (urlroot +
-               "/book/advances-in-neural-information-processing-systems" +
-               "-{}-{}".format(str(number), str(year)))
+        url = (
+            urlroot
+            + "/book/advances-in-neural-information-processing-systems"
+            + "-{}-{}".format(str(number), str(year))
+        )
     return url
 
 
@@ -84,7 +90,7 @@ def get_year(year):
     year_url = make_url(year)
     papers = parse_url(year_url)
     for paper in papers:
-        paper['year'] = year
+        paper["year"] = year
     papers = add_abstracts(papers)
     return papers
 
