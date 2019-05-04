@@ -1,12 +1,13 @@
-# nips.json
+# neurips.json
 
-NIPS paper metadata in a json file (and code to generate the file)
+NeurIPS paper metadata in a json file (and the code to recreate and update that
+file).
 
 ```python
 >>> import json
->>> with open('nips.json') as infile:
-...     nips = json.loads(infile.read())
->>> nips[5165]  # word2vec
+>>> with open('neurips.json') as infile:
+...     papers = json.loads(infile.read())
+>>> papers[5165]  # word2vec
 {'abstract': 'The recently introduced continuous Skip-gram model is an efficient method for learning high-quality distributed vector representations that capture a large number of precise syntactic and semantic word relationships.  In this paper we present several improvements that make the Skip-gram model more expressive and enable it to learn higher quality vectors more rapidly.  We show that by subsampling frequent words we obtain significant speedup,  and also learn higher quality representations as measured by our tasks. We also introduce Negative Sampling, a simplified variant of Noise Contrastive Estimation (NCE) that learns more accurate vectors for frequent words compared to the hierarchical softmax.   An inherent limitation of word representations is their indifference to word order and their inability to represent idiomatic phrases.  For example, the meanings of Canada\'\' and "Air\'\' cannot be easily combined to obtain "Air Canada\'\'.  Motivated by this example, we present a simple and efficient method for finding phrases, and show that their vector representations can be accurately learned by the Skip-gram model. "',
  'authors': ['Tomas Mikolov',
   'Ilya Sutskever',
@@ -17,23 +18,42 @@ NIPS paper metadata in a json file (and code to generate the file)
  'year': 2013}
 ```
 
-## Example
+## pandas example
 
-Get number of papers:
+Load the data into a pandas DataFrame and find the number of papers by year:
 
 ```python
 >>> import pandas as pd
->>> nips = pd.read_json('nips.json')
->>> npapers = nips.groupby('year').size()
+>>> papers = pd.read_json('neurips.json')
+>>> npapers = papers.groupby('year').size()
+>>> print(npapers)
+year
+1987      90
+1988      94
+1989     101
+[...]
+2016     569
+2017     679
+2018    1009
+dtype: int64
 ```
 
-Get average number of authors by year:
+Find the average number of authors by year:
 
 ```python
->>> nauthors = nips['authors'].apply(len).groupby(nips['year']).mean()
+>>> nauthors = papers['authors'].apply(len).groupby(papers['year']).mean()
+year
+1987    1.966667
+1988    2.372340
+1989    2.257426
+[...]
+2016    3.432337
+2017    3.671576
+2018    3.789891
+Name: authors, dtype: float64
 ```
 
-Plot:
+Plot these:
 
 ```python
 >>> import matplotlib.pyplot as plt
@@ -46,24 +66,26 @@ Plot:
 >>> fig.savefig('plot.png', bbox_inches='tight')
 ```
 
-![nipsplot](plot.png)
+![NeurIPS plot](plot.png)
 
-## Recreate json from scratch
+## Recreate the json from scratch
 
 `pip install requests beautifulsoup4` then
 
 ```python
 >>> import json
->>> import scrape
->>> nips = scrape.get_all_years()  # 30-60m on a fast connection
->>> with open('nips.json', 'w') as outfile:
-...     json.dump(nips, outfile)
+>>> import neurips
+>>> papers = neurips.get_all_years()  # 30-60m on a fast connection
+>>> with open('neurips.json', 'w') as fp:
+...     json.dump(papers, fp)
 ```
 
 ## Append a year to existing json
 
 ```python
->>> nips = load_and_append_year(2017)
->>> with open('nips.json', 'w') as outfile:
-...     json.dump(nips, outfile)
+>>> papers = neuripsjson.load_and_append_year(2018)
+Loaded 7241 papers from neurips.json
+Added 1009 papers from 2018
+>>> with open('neurips.json', 'w') as fp:
+...     json.dump(papers, fp)
 ```
