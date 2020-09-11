@@ -32,9 +32,9 @@ year
 1988      94
 1989     101
 [...]
-2016     569
 2017     679
 2018    1009
+2019    1428
 dtype: int64
 ```
 
@@ -42,14 +42,15 @@ Find the average number of authors by year:
 
 ```python
 >>> nauthors = papers['authors'].apply(len).groupby(papers['year']).mean()
+>>> print(nauthors)
 year
 1987    1.966667
 1988    2.372340
 1989    2.257426
 [...]
-2016    3.432337
 2017    3.671576
 2018    3.789891
+2019    3.899160
 Name: authors, dtype: float64
 ```
 
@@ -61,6 +62,7 @@ Plot these:
 >>> fig, ax = plt.subplots(2, 1, sharex=True, figsize=(4, 3))
 >>> ax[0] = npapers.plot(ax=ax[0])
 >>> ax[0].set_ylabel('Papers')
+>>> ax[0].set_ylim(0, None)
 >>> ax[1] = nauthors.plot(ax=ax[1])
 >>> ax[1].set_ylabel('Authors per paper')
 >>> fig.savefig('plot.png', bbox_inches='tight')
@@ -84,8 +86,8 @@ Plot these:
 
 ```python
 >>> papers = neuripsjson.load_and_append_year(2018)
-Loaded 7241 papers from neurips.json
-Added 1009 papers from 2018
+Loaded 8250 papers from neurips.json
+Added 1428 papers from 2019
 >>> with open('neurips.json', 'w') as fp:
 ...     json.dump(papers, fp)
 ```
