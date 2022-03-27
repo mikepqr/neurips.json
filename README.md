@@ -33,9 +33,9 @@ year
 1988      94
 1989     101
 [...]
-2018    1009
 2019    1428
 2020    1898
+2021    2334
 dtype: int64
 ```
 
@@ -49,9 +49,9 @@ year
 1988    2.372340
 1989    2.257426
 [...]
-2018    3.789891
 2019    3.899160
 2020    4.104847
+2021    4.255356
 Name: authors, dtype: float64
 ```
 
@@ -72,20 +72,14 @@ Plot these:
 
 ## Recreate the json from scratch
 
-`pip install requests beautifulsoup4` then
+`pip install httpx beautifulsoup4` then
 
-```python
->>> import json
->>> import neuripsjson
->>> papers = neuripsjson.get_all_years()  # 30-60m on a fast connection
->>> with open('neurips.json', 'w') as fp:
-...     json.dump(papers, fp)
+```bash
+$ python neuripsjson.py create  # ~5 minutes
 ```
 
 ## Append a year to existing json
 
-```python
->>> papers = neuripsjson.load_and_append_year(2020)
->>> with open('neurips.json', 'w') as fp:
-...     json.dump(papers, fp)
+```bash
+$ python neuripsjson.py add 2021  # ~30 seconds
 ```
