@@ -72,14 +72,8 @@ Plot these:
 
 ## Recreate the json from scratch
 
-`pip install httpx beautifulsoup4` then
+`pip install modal beautifulsoup4 requests` then
 
 ```bash
-$ python neuripsjson.py create  # ~5 minutes
-```
-
-## Append a year to existing json
-
-```bash
-$ python neuripsjson.py add 2021  # ~30 seconds
+$ modal run neuripsjson.py # ~2 minutes
 ```
