@@ -1,3 +1,10 @@
+# Archived September 2024
+
+
+This repository might be of interest as a demo of asynchronous scraping, but
+[the data is now available as an official
+download](https://neurips.cc/Downloads).
+
 # neurips.json
 
 NeurIPS paper metadata in a json file (and the code to recreate and update that
